@@ -154,7 +154,7 @@ jobs:
         fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
 
     - name: Install Build Wrapper
-      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@ff001fd60075371d6a718f7bdb70514d38aeaa60
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v2
