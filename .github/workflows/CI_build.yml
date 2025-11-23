@@ -177,7 +177,11 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
-          --define "sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
+            -Dsonar.projectKey=sania587_notepad-plus-plus
+            -Dsonar.organization=sania587
+            -Dsonar.projectName=notepad-plus-plus
+            -Dsonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json
+
 
   build_windows:
 
