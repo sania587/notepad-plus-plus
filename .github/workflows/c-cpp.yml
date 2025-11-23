@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Changed from windows-latest to ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -24,7 +24,7 @@ jobs:
         sudo apt-get install -y build-essential autoconf automake libtool
     
     - name: Install Build Wrapper
-      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@8b92d6ce74c45b0d0031f8cdacee8b5b0cbf9c5a
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
 
     - name: configure
       run: ./configure
@@ -41,7 +41,6 @@ jobs:
 
     - name: SonarQube Scan
       uses: SonarSource/sonarqube-scan-action@v6
-
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
