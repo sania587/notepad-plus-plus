@@ -4,6 +4,7 @@ on: [push, pull_request]
 env:
   PYTHON_ALLOW_CACHE: true
   PYTHON_DIR_CACHE: D:\.cache\python
+  BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory
 
 jobs:
   before_build:
@@ -140,6 +141,43 @@ jobs:
             Write-Output "`nSome XML files are invalid.`n"
             $host.SetShouldExit($LastExitCode)
         }
+
+  sonarqube_analysis:
+    runs-on: windows-latest
+    needs: before_build
+    if: needs.before_build.outputs.result == '' || needs.before_build.outputs.result == 'ONEJOB'
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v6
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for better analysis relevancy
+
+    - name: Install Build Wrapper
+      uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v6
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Modify resource.h N++ version to avoid confusion
+      working-directory: PowerEditor\src\
+      run: |
+           $content = Get-Content -Path 'resource.h'
+           $newContent = $content -replace 'TEXT\(\"Notepad\+\+ v.*\"\)', 'TEXT("Notepad++ GH_BUILD")'
+           $newContent | Set-Content -Path 'resource.h'
+
+    - name: Run Build Wrapper with MSBuild
+      working-directory: PowerEditor\visual.net\
+      run: |
+        build-wrapper-win-x86-64.exe --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} msbuild notepadPlus.sln /m /p:configuration="Debug" /p:platform="Win32" /p:PlatformToolset="v143"
+
+    - name: SonarQube Scan
+      uses: SonarSource/sonarqube-scan-action@v6
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          --define "sonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json"
 
   build_windows:
 
