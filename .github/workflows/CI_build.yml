@@ -171,17 +171,7 @@ jobs:
       run: |
         build-wrapper-win-x86-64.exe --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} msbuild notepadPlus.sln /m /p:configuration="Debug" /p:platform="Win32" /p:PlatformToolset="v143"
 
-    - name: SonarQube Scan
-      uses: SonarSource/sonarqube-scan-action@v6
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-            -Dsonar.projectKey=sania587_notepad-plus-plus
-            -Dsonar.organization=sania587
-            -Dsonar.projectName=notepad-plus-plus
-            -Dsonar.cfamily.compile-commands=${{ env.BUILD_WRAPPER_OUT_DIR }}/compile_commands.json
-
+   
 
   build_windows:
 
